@@ -1,0 +1,26 @@
+{
+    "name": "galette/plugin-oauth2",
+    "description": "Plugin for oauth2 login",
+    "license": "GPLv3",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "GaletteOAuth2\\": "lib/GaletteOAuth2"
+        }
+    },
+    "authors": [
+        {
+            "name": "Manuel H",
+            "email": "manuelh78dev@ik.me"
+        }
+    ],
+    "require": {
+        "php": ">=7.3",
+        "symfony/yaml": "^5.3",
+        "league/oauth2-server": "^8.3",
+        "hassankhan/config": "^2.2"
+    },
+    "config": {
+        "optimize-autoloader": true
+    }
+}

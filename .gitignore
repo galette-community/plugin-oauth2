@@ -1,0 +1,11 @@
+*.key
+*.log
+.php*
+*.lock
+vendor/
+.build/
+
+/config/*
+!/config/.htaccess
+!/config/encryption-key.php
+!/config/config.yml.dist

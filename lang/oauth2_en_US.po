@@ -1,0 +1,31 @@
+#: ../templates/default/oauth2_login.tpl:32
+msgid "Username or email"
+msgstr "Username or email"
+
+#: ../templates/default/oauth2_login.tpl:39
+msgid "Password"
+msgstr "Password"
+
+#: ../lib/GaletteOAuth2/Authorization/UserHelper.php:137
+msgid "Sorry, you can't login because your are not a up-to-date members."
+msgstr "Sorry, you can't login because your are not a up-to-date members."
+
+#: ../templates/default/oauth2_login.tpl:20
+msgid "Please sign in for"
+msgstr "Please sign in for"
+
+#: ../lib/GaletteOAuth2/Controllers/LoginController.php:106
+msgid "Check your login / email or password."
+msgstr "Check your login / email or password."
+
+#: ../templates/default/oauth2_login.tpl:44
+msgid "Login"
+msgstr "Login"
+
+#: ../lib/GaletteOAuth2/Authorization/UserHelper.php:161
+msgid "You are not an active member."
+msgstr "You are not an active member."
+
+#: ../lib/GaletteOAuth2/Authorization/UserHelper.php:131
+msgid "Sorry, you can't login because your are not a team member."
+msgstr "Sorry, you can't login because your are not a team member."
