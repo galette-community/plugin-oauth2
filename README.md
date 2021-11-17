@@ -1,6 +1,6 @@
 #Setup
 
-##Path galette :
+## Path galette :
 
 This project use league/oauth2-server, symfony/yaml and hassankhan/config packages.
 To automatically download these packages:
@@ -9,9 +9,9 @@ cd plugin-oauth2
 composer install
 ```
 
-##Path plugin-oauth2/config :
+## Path plugin-oauth2/config :
 
-###Prepare public/private keys
+### Prepare public/private keys
 
 ```
 cd plugin-oauth2/config
@@ -22,7 +22,7 @@ vendor/bin/generate-defuse-key
 copy-paste the hexadecimal string result in plugin-oauth2/config/encryption-key.php
 ```
 
-###Configure a ClientEntity
+### Configure a ClientEntity
 edit config/config.yml (look in folder 'examples')
 ```
 global:
@@ -40,7 +40,7 @@ galette_xxxxx:
 
 ```
 
-####Available options :
+#### Available options :
 * teamonly : only staff members can login
 * uptodate : only uptodate members can login
 
