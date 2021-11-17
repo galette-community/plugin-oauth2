@@ -23,7 +23,7 @@ copy-paste the hexadecimal string result in plugin-oauth2/config/encryption-key.
 ```
 
 ### Configure a ClientEntity
-edit config/config.yml (look in folder 'examples')
+rename config/config.yml.dist to config/config.yml and edit : (look in folder 'examples')
 ```
 global:
     password: abc123
@@ -44,9 +44,9 @@ galette_xxxxx:
 * teamonly : only staff members can login
 * uptodate : only uptodate members can login
 
-#Usage
+# Usage
 
-##Nextcloud; how add groups for specific staff members
+## Nextcloud; how add groups for specific staff members
 Edit a member : In info_adh field you can add a line with #GROUPS:group1;group2#
 Example :
 ```
