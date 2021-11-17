@@ -46,8 +46,9 @@ galette_xxxxx:
 
 # Usage
 
-## Nextcloud; how add groups for specific staff members
+## Nextcloud - how add groups for a specific member
 Edit a member : In info_adh field you can add a line with #GROUPS:group1;group2#
+
 Example :
 ```
 #GROUPS:accouting;home#
