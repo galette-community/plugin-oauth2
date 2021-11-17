@@ -163,13 +163,12 @@ final class LoginController extends AbstractPluginController
         $client_id = $_SESSION['request_args']['client_id'];
         $_SESSION['request_args'] = [];
 
-        //By default : global.last_redirect_logout elseif client_id.redirect_logout else '/'
+        //By default : client_id.redirect_logout else '/'
         $redirect_logout = '/';
 
         if ($client_id) {
             $redirect_logout = $this->config->get("{$client_id}.redirect_logout", $redirect_logout);
         }
-        //$redirect_logout = $this->config->get('global.last_redirect_logout', $redirect_logout);
 
         Debug::log("logout():url_logout for client:'{$client_id}' = '{$redirect_logout}'");
 

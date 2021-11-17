@@ -138,12 +138,6 @@ final class AuthorizationController extends AbstractPluginController
         $params = (array) $request->getParsedBody(); //POST
 
         try {
-            /*//logout() redirect to the last application
-            $client_id = $params['client_id'];
-            $url_logout = $this->config->get("{$client_id}.redirect_logout");
-            $this->config->set('global.last_redirect_logout', $url_logout);
-            $this->config->writeFile();*/
-
             // Try to respond to the access token request
             $r = $server->respondToAccessTokenRequest($request, $response);
             Debug::log('authorization/token() exit ok');

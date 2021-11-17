@@ -74,7 +74,6 @@ final class Debug
         if (null !== self::$logger) {
             self::$logger->info($txt);
         }
-        //if (1)    file_put_contents(__DIR__.'/../Logs/_debug.txt', "$txt\n", FILE_APPEND);
     }
 
     public static function logRequest($fct, $request): void

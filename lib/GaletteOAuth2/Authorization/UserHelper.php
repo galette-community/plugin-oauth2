@@ -122,8 +122,6 @@ final class UserHelper
         '.' .
         self::stripAccents(\mb_strtolower($nameFPart));
 
-        //strtolower(($prenoms != '' ? static::stripAccents($prenoms[0]) : '') . "." . $member->name[0]);
-
         $etat_adhesion = ($member->isActive() && $member->isUp2Date()) || $member->isAdmin();
 
         //for options=

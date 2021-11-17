@@ -38,7 +38,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface as RequestHandler;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Psr7\Response;
-use Slim\Routing\RouteContext;
 
 final class Authentication
 {
@@ -55,10 +54,6 @@ final class Authentication
         $loggedIn = $_SESSION['isLoggedIn'] ?? '';
 
         if ('yes' !== $loggedIn) {
-            /*$routeContext = RouteContext::fromRequest($request);
-            $routeParser = $routeContext->getRouteParser();
-            $currentRoute = $routeContext->getRoute();
-            $url = $routeParser->urlFor(*/
             $url = $this->container->get('router')->pathFor(
                 OAUTH2_PREFIX . '_login',
                 [],

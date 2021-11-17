@@ -71,7 +71,7 @@ final class ScopeRepository implements ScopeRepositoryInterface
         ClientEntityInterface $clientEntity,
         $userIdentifier = null
     ) {
-        /*Todo?
+        /*TODO : ?
                 // Example of programatically modifying the final scope of the access token
                 if ((int) $userIdentifier === 1) {
                     $scope = new ScopeEntity();
