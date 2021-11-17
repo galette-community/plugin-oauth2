@@ -54,7 +54,7 @@ $container = $this->getContainer();
 $container->set(
     Config::class,
     static function (ContainerInterface $container) {
-        $conf = new GaletteOAuth2\Tools\Config(__DIR__ . '/config/config.yml');
+        $conf = new GaletteOAuth2\Tools\Config(OAUTH2_CONFIGPATH . '/config.yml');
         $conf->writeFile();
 
         return $conf;
@@ -64,7 +64,7 @@ $container->set(
 $container->set(
     AuthorizationServer::class,
     function (ContainerInterface $container) {
-        include __DIR__ . '/config/encryption-key.php';
+        include OAUTH2_CONFIGPATH . '/encryption-key.php';
 
         // Setup the authorization server
         $server = new AuthorizationServer(
@@ -75,7 +75,7 @@ $container->set(
             // instance of ScopeRepositoryInterface
             new ScopeRepository(),
             // path to private key
-            'file://' . __DIR__ . '/config/private.key',
+            'file://' . OAUTH2_CONFIGPATH . '/private.key',
             // encryption key
             Key::loadFromAsciiSafeString($encryptionKey),
         );
@@ -135,7 +135,7 @@ $container->set(
 $container->set(
     ResourceServer::class,
     static function (ContainerInterface $container) {
-        $publicKeyPath = 'file://' . __DIR__ . '/config/public.key';
+        $publicKeyPath = 'file://' . OAUTH2_CONFIGPATH . '/public.key';
 
         return new ResourceServer(
             new AccessTokenRepository(),
