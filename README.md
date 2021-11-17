@@ -1,6 +1,6 @@
 # Setup
 
-## Path galette :
+## Path plugin-oauth2/ :
 
 This project use league/oauth2-server, symfony/yaml and hassankhan/config packages.
 To automatically download these packages:
@@ -9,7 +9,7 @@ cd plugin-oauth2
 composer install
 ```
 
-## Path plugin-oauth2/config :
+## Path plugin-oauth2/config/ :
 
 ### Prepare public/private keys
 
