@@ -35,7 +35,6 @@ namespace GaletteOAuth2\Controllers;
 use Galette\Controllers\AbstractPluginController;
 use GaletteOAuth2\Entities\UserEntity;
 use GaletteOAuth2\Tools\Config as Config;
-
 use GaletteOAuth2\Tools\Debug as Debug;
 use League\OAuth2\Server\AuthorizationServer;
 use Psr\Container\ContainerInterface;
