@@ -49,6 +49,6 @@ $this->map(['GET', 'POST'], '/logout', [LoginController::class, 'logout'])->setN
 
 $this->map(['GET', 'POST'], '/authorize', [AuthorizationController::class, 'authorize'])
     ->setName(OAUTH2_PREFIX . '_authorize')->add(Authentication::class);
-$this->post('/access_token', [AuthorizationController::class, 'token']);
+$this->post('/access_token', [AuthorizationController::class, 'token'])->setName(OAUTH2_PREFIX . '_token');
 
 $this->get('/user', [ApiController::class, 'user'])->setName(OAUTH2_PREFIX . '_user');
