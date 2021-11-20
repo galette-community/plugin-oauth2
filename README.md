@@ -1,17 +1,18 @@
+Makes Galette act as a oAuth2 server; so it is possible to use existing members to log-in on third party websites, like [Flarum](https://flarum.org/), [Nextcould](https://nextcloud.com/), and so on!
+
 # Setup
 
-## Path plugin-oauth2/ :
+This project use `league/oauth2-server`, `symfony/yaml` and `hassankhan/config` packages.
 
-This project use league/oauth2-server, symfony/yaml and hassankhan/config packages.
 To automatically download these packages:
 ```
 cd plugin-oauth2
 composer install
 ```
 
-## Path plugin-oauth2/config/ :
+# Configuration
 
-### Prepare public/private keys
+## Prepare public/private keys
 
 ```
 cd plugin-oauth2/config
@@ -22,8 +23,8 @@ vendor/bin/generate-defuse-key
 copy-paste the hexadecimal string result in plugin-oauth2/config/encryption-key.php
 ```
 
-### Configure a ClientEntity
-rename config/config.yml.dist to config/config.yml and edit : (look in folder 'examples')
+## Configure a ClientEntity
+rename `config/config.yml.dist` to `config/config.yml` and edit: (look in folder 'examples')
 ```
 global:
     password: abc123
@@ -40,20 +41,20 @@ galette_xxxxx:
 
 ```
 
-#### Available options :
+### Available options :
 * teamonly : only staff members can login
 * uptodate : only uptodate members can login
 
 # Usage
 
 ## Nextcloud - how add groups for a specific member
-Edit a member : In info_adh field you can add a line with #GROUPS:group1;group2#
+Edit a member : In `info_adh` field you can add a line with `#GROUPS:group1;group2#`
 
 Example :
 ```
 #GROUPS:accouting;home#
 ```
 
-# More informations about OAuth2 Server
+# More information about OAuth2 Server
 * https://oauth2.thephpleague.com/
 * https://github.com/thephpleague/oauth2-server/
