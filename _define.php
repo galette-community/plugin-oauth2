@@ -39,5 +39,6 @@ $this->register(
     'oauth2',               //routing name and translation domain
     '2021-11-08',           //Release date
     [//Permissions needed
+        'oauth2_authorize' => 'member'
     ],
 );
