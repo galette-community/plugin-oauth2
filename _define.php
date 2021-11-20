@@ -42,3 +42,7 @@ $this->register(
         'oauth2_authorize' => 'member'
     ],
 );
+
+$this->setCsrfExclusions([
+    '/oauth2_*/',
+]);
