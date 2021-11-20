@@ -24,11 +24,13 @@ copy-paste the hexadecimal string result in plugin-oauth2/config/encryption-key.
 ```
 
 ## Configure a ClientEntity
-rename `config/config.yml.dist` to `config/config.yml` and edit: (look in folder 'examples')
+
+Rename `config/config.yml.dist` to `config/config.yml` and edit according to your third party applicaiton settings:
+
 ```
 global:
     password: abc123
-    
+
 galette_flarum:
     title: 'Forum Flarum'
     redirect_logout: 'http://192.168.1.99/flarum/public'
@@ -40,6 +42,15 @@ galette_nc:
 galette_xxxxx:
 
 ```
+
+The corresponding Flarum configuration:
+
+![Flarum configuration example](examples/flarum.png)
+
+The corresponding NextCloud configuration:
+
+![Nextcloud configuration example](examples/nextcloud.png)
+
 
 ### Available options :
 * teamonly : only staff members can login
