@@ -35,7 +35,7 @@ $this->register(
     'OAuth 2.0 integration',   //Short description
     'Manuel Hervouet',     //Author
     '1.0.0',                //Version
-    '0.9.5',                //Galette compatible version
+    '0.9.6',                //Galette compatible version
     'oauth2',               //routing name and translation domain
     '2021-11-08',           //Release date
     [//Permissions needed
