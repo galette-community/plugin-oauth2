@@ -32,20 +32,22 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Tools;
 
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
 final class Debug
 {
     private static $logger;
 
-    public static function init()
+    public static function init(): Logger
     {
-        self::$logger = new \Monolog\Logger('OAuth2');
-        $stream = new \Monolog\Handler\StreamHandler(__DIR__ . '/../../../logs/app.log', Logger::DEBUG);
+        self::$logger = new Logger('OAuth2');
+        $stream = new StreamHandler(__DIR__ . '/../../../logs/app.log', Logger::DEBUG);
         $dateFormat = 'Y-m-d H:i:s';
         //$output = "[%datetime%] %channel% %level_name%: %message% \n"; // %context% %extra%\n";
         $output = "[%datetime%] : %message% \n"; // %context% %extra%\n";
-        $formatter = new \Monolog\Formatter\LineFormatter($output, $dateFormat);
+        $formatter = new LineFormatter($output, $dateFormat);
         $stream->setFormatter($formatter);
         self::$logger->pushHandler($stream);
 
@@ -54,14 +56,14 @@ final class Debug
 
     public static function printVar($expression, $return = true)
     {
-        $export = \print_r($expression, true);
+        $export = print_r($expression, true);
         $patterns = [
             '/array \\(/' => '[',
             '/^([ ]*)\\)(,?)$/m' => '$1]$2',
             "/=>[ ]?\n[ ]+\\[/" => '=> [',
             "/([ ]*)(\\'[^\\']+\\') => ([\\[\\'])/" => '$1$2 => $3',
         ];
-        $export = \preg_replace(\array_keys($patterns), \array_values($patterns), $export);
+        $export = preg_replace(array_keys($patterns), array_values($patterns), $export);
 
         if ((bool) $return) {
             return $export;
@@ -71,9 +73,7 @@ final class Debug
 
     public static function log(string $txt): void
     {
-        if (null !== self::$logger) {
-            self::$logger->info($txt);
-        }
+        self::$logger?->info($txt);
     }
 
     public static function logRequest($fct, $request): void

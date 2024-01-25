@@ -32,27 +32,29 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Controllers;
 
+use DI\Attribute\Inject;
+use DI\Container;
 use Galette\Controllers\AbstractPluginController;
 use GaletteOAuth2\Authorization\UserAuthorizationException;
 use GaletteOAuth2\Authorization\UserHelper;
 use GaletteOAuth2\Tools\Config;
 use GaletteOAuth2\Tools\Debug;
 use League\OAuth2\Server\ResourceServer;
-use Psr\Container\ContainerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
 final class ApiController extends AbstractPluginController
 {
     /**
-     * @Inject("Plugin Galette OAuth2")
+     * @var array<string, mixed>
      */
-    protected $module_info;
-    protected $container;
-    protected $config;
+    #[Inject("Plugin Galette OAuth2")]
+    protected array $module_info;
+    protected Container $container;
+    protected Config $config;
 
     // constructor receives container instance
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
         $this->config = $container->get(Config::class);
@@ -82,7 +84,7 @@ final class ApiController extends AbstractPluginController
 
         Debug::log('api/user() return data = ' . Debug::printVar($data));
 
-        $response->getBody()->write(\json_encode($data));
+        $response->getBody()->write(json_encode($data));
         Debug::log('api/user() exit.');
 
         return $response->withStatus(200);

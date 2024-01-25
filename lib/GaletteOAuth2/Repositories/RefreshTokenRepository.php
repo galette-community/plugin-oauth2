@@ -38,33 +38,21 @@ use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
 
 final class RefreshTokenRepository implements RefreshTokenRepositoryInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function persistNewRefreshToken(RefreshTokenEntityInterface $refreshTokenEntity): void
     {
         // Some logic to persist the refresh token in a database
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function revokeRefreshToken($tokenId): void
     {
         // Some logic to revoke the refresh token in a database
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isRefreshTokenRevoked($tokenId)
     {
         return false; // The refresh token has not been revoked
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getNewRefreshToken()
     {
         return new RefreshTokenEntity();

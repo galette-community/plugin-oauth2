@@ -33,6 +33,8 @@ declare(strict_types=1);
 namespace GaletteOAuth2\Authorization;
 
 //Only for security reason
-final class UserAuthorizationException extends \Exception
+use Exception;
+
+final class UserAuthorizationException extends Exception
 {
 }

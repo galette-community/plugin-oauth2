@@ -32,31 +32,34 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Controllers;
 
+use DI\Attribute\Inject;
+use DI\Container;
 use Galette\Controllers\AbstractPluginController;
 use GaletteOAuth2\Authorization\UserAuthorizationException;
 use GaletteOAuth2\Authorization\UserHelper;
 //use Slim\Views\Twig;
 //use Slim\Routing\RouteContext;
 use GaletteOAuth2\Tools\Config;
-use GaletteOAuth2\Tools\Debug as Debug;
-use Psr\Container\ContainerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use GaletteOAuth2\Tools\Debug;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
 final class LoginController extends AbstractPluginController
 {
     /**
-     * @Inject("Plugin Galette OAuth2")
+     * @var array<string, mixed>
      */
-    protected $module_info;
-    protected $container;
-    protected $config;
+    #[Inject("Plugin Galette OAuth2")]
+    protected array $module_info;
+    protected Container $container;
+    protected Config $config;
 
     // constructor receives container instance
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
         $this->config = $this->container->get(Config::class);
+        parent::__construct($container);
     }
 
     public function login(Request $request, Response $response): Response
@@ -64,12 +67,12 @@ final class LoginController extends AbstractPluginController
         Debug::logRequest('login()', $request);
 
         if ($request->getMethod() === 'GET') {
-            $redirect_url = $request->getQueryParam('redirect_url', null);
+            $redirect_url = $request->getQueryParams()['redirect_url'] ?? false;
 
             if ($redirect_url) {
-                $url = \urldecode($redirect_url);
-                $url_query = \parse_url($url, \PHP_URL_QUERY);
-                \parse_str($url_query, $url_args);
+                $url = urldecode($redirect_url);
+                $url_query = parse_url($url, PHP_URL_QUERY);
+                parse_str($url_query, $url_args);
                 $_SESSION['request_args'] = $url_args;
             }
 
@@ -78,11 +81,12 @@ final class LoginController extends AbstractPluginController
             }
 
             // display page
-            return $this->view->render(
+            $this->view->render(
                 $response,
-                'file:[' . $this->getModuleRoute() . ']' . OAUTH2_PREFIX . '_login.tpl',
-                $this->prepareVarsForm(),
+                $this->getTemplate(OAUTH2_PREFIX . '_login'),
+                $this->prepareVarsForm()
             );
+            return $response;
         }
 
         if (OAUTH2_DEBUGSESSION) {
@@ -94,26 +98,29 @@ final class LoginController extends AbstractPluginController
 
         //Try login
         $_SESSION['isLoggedIn'] = 'no';
-        $_SESSION['user_id'] = $uid = UserHelper::login($this->container, $params['username'], $params['password']);
-        //if($params['username'] == 'manuel') $loginSuccessful = true;
-        Debug::log("UserHelper::login({$params['username']}) return '{$uid}'");
+        $_SESSION['user_id'] = $uid = UserHelper::login($this->container, $params['login'], $params['password']);
+        //if($params['login'] == 'manuel') $loginSuccessful = true;
+        Debug::log("UserHelper::login({$params['login']}) return '{$uid}'");
 
-        if (0 === $uid) {
-            return $this->view->render(
-                $response,
-                'file:[' . $this->getModuleRoute() . ']oauth2_login.tpl',
-                \array_merge(
-                    $this->prepareVarsForm(),
-                    [
-                        'username' => $params['username'],
-                        'errorMessage' => _T('Check your login / email or password.', 'oauth2'),
-                    ],
-                ),
+        if (false === $uid) {
+            $this->flash->addMessage(
+                'error_detected',
+                _T('Check your login / email or password.', 'oauth2')
             );
+            return $response
+                ->withStatus(301)
+                ->withHeader(
+                    'Location',
+                    $this->routeparser->urlFor(OAUTH2_PREFIX . '_login')
+                );
         }
 
         //check rights with scopes
-        $options = UserHelper::mergeOptions($this->config, $_SESSION['request_args']['client_id'], \explode(' ', $_SESSION['request_args']['scope']));
+        $options = UserHelper::mergeOptions(
+            $this->config,
+            $_SESSION['request_args']['client_id'],
+            explode(' ', $_SESSION['request_args']['scope'])
+        );
 
         try {
             UserHelper::getUserData($this->container, $uid, $options);
@@ -121,17 +128,16 @@ final class LoginController extends AbstractPluginController
             UserHelper::logout($this->container);
             Debug::log('login() check rights error ' . $e->getMessage());
 
-            return $this->view->render(
-                $response,
-                'file:[' . $this->getModuleRoute() . ']oauth2_login.tpl',
-                \array_merge(
-                    $this->prepareVarsForm(),
-                    [
-                        'username' => $params['username'],
-                        'errorMessage' => $e->getMessage(),
-                    ],
-                ),
+            $this->flash->addMessage(
+                'error_detected',
+                $e->getMessage()
             );
+            return $response
+                ->withStatus(301)
+                ->withHeader(
+                    'Location',
+                    $this->routeparser->urlFor(OAUTH2_PREFIX . '_login')
+                );
         }
 
         $_SESSION['isLoggedIn'] = 'yes';
@@ -145,7 +151,8 @@ final class LoginController extends AbstractPluginController
             'redirect_uri' => $_SESSION['request_args']['redirect_uri'],
         ];
 
-        $url = $this->routeparser->pathFor(OAUTH2_PREFIX . '_authorize', [], $url_params);
+        //$url = $this->routeparser->pathFor(OAUTH2_PREFIX . '_authorize', [], $url_params);
+        $url = $this->routeparser->urlFor(OAUTH2_PREFIX . '_authorize', [], $url_params);
 
         $response = new Response();
 
@@ -172,7 +179,7 @@ final class LoginController extends AbstractPluginController
 
         Debug::log("logout():url_logout for client:'{$client_id}' = '{$redirect_logout}'");
 
-        //Add a url redirection in config.yml : $client_id:   redirect_logout:"https:\\xxx");
+        //Add an url redirection in config.yml : $client_id:   redirect_logout:"https:\\xxx");
         return $response->withHeader('Location', $redirect_logout)->withStatus(302);
     }
 

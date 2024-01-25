@@ -32,49 +32,55 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Middleware;
 
-use GaletteOAuth2\Tools\Debug as Debug;
-//use Psr\Http\Server\RequestHandlerInterface as RequestHandler; //Slim 4
-use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseInterface as RequestHandler;
+use GaletteOAuth2\Tools\Debug;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Slim\Psr7\Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use DI\Container;
+use Slim\Routing\RouteParser;
 
 final class Authentication
 {
-    private $container;
+    private Container $container;
+    private RouteParser $routeparser;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
+        $this->routeparser = $container->get(RouteParser::class);
     }
 
-    //public function __invoke(Request $request, RequestHandler $handler) //slim v4
-    public function __invoke($request, $response, $next)
+    /**
+     * Middleware invokable class
+     *
+     * @param Request        $request PSR7 request
+     * @param RequestHandler $handler PSR7 request handler
+     *
+     * @return Response
+     */
+    public function __invoke(Request $request, RequestHandler $handler): Response
     {
         $loggedIn = $_SESSION['isLoggedIn'] ?? '';
 
         if ('yes' !== $loggedIn) {
-            $url = $this->container->get('router')->pathFor(
+            $url = $this->routeparser->urlFor(
                 OAUTH2_PREFIX . '_login',
                 [],
                 ['redirect_url' => $_SERVER['REQUEST_URI']],
             );
             Debug::log("Redirect to {$url}");
 
-            //$response = new Response();
+            $response = new \Slim\Psr7\Response();
             // If the user is not logged in, redirect them to login
             return $response->withHeader('Location', $url)
                 ->withStatus(302);
         }
 
-        return $next($request, $response);
-        /* Slim v4
         // The user must be logged in, so pass this request
         // down the middleware chain
         $response = $handler->handle($request);
 
         // And pass the request back up the middleware chain.
         return $response;
-         */
     }
 }

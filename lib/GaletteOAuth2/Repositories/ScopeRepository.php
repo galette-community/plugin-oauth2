@@ -35,12 +35,10 @@ namespace GaletteOAuth2\Repositories;
 use GaletteOAuth2\Entities\ScopeEntity;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
+use function array_key_exists;
 
 final class ScopeRepository implements ScopeRepositoryInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function getScopeEntityByIdentifier($scopeIdentifier)
     {
         $scopes = [
@@ -52,7 +50,7 @@ final class ScopeRepository implements ScopeRepositoryInterface
             ],
         ];
 
-        if (\array_key_exists($scopeIdentifier, $scopes) === false) {
+        if (array_key_exists($scopeIdentifier, $scopes) === false) {
             return;
         }
 
@@ -72,7 +70,7 @@ final class ScopeRepository implements ScopeRepositoryInterface
         $userIdentifier = null
     ) {
         /*TODO : ?
-                // Example of programatically modifying the final scope of the access token
+                // Example of programmatically modifying the final scope of the access token
                 if ((int) $userIdentifier === 1) {
                     $scope = new ScopeEntity();
                     $scope->setIdentifier('email');

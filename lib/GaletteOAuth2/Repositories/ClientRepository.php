@@ -32,26 +32,23 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Repositories;
 
+use DI\Container;
 use GaletteOAuth2\Entities\ClientEntity;
-use GaletteOAuth2\Tools\Config as Config;
-use GaletteOAuth2\Tools\Debug as Debug;
+use GaletteOAuth2\Tools\Config;
+use GaletteOAuth2\Tools\Debug;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
-use Psr\Container\ContainerInterface as ContainerInterface;
 
 final class ClientRepository implements ClientRepositoryInterface
 {
-    private $container;
-    private $config;
+    private Container $container;
+    private Config $config;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
         $this->config = $this->container->get(Config::class);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getClientEntity($clientIdentifier)
     {
         $client = new ClientEntity();
@@ -65,20 +62,17 @@ final class ClientRepository implements ClientRepositoryInterface
         return $client;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function validateClient($clientIdentifier, $clientSecret, $grantType)
     {
-        if (!\preg_match('/galette_/', $clientIdentifier)) {
+        if (!preg_match('/galette_/', $clientIdentifier)) {
             Debug::log("validateClient({$clientIdentifier}) denied");
 
             return false;
         }
 
-        $pwd = \password_hash($this->config->get('global.password'), \PASSWORD_BCRYPT);
+        $pwd = password_hash($this->config->get('global.password'), PASSWORD_BCRYPT);
 
-        if (\password_verify($clientSecret, $pwd) === false) {
+        if (password_verify($clientSecret, $pwd) === false) {
             return false;
         }
 

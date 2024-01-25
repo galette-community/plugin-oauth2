@@ -39,33 +39,21 @@ use League\OAuth2\Server\Repositories\AccessTokenRepositoryInterface;
 
 final class AccessTokenRepository implements AccessTokenRepositoryInterface
 {
-    /**
-     * {@inheritDoc}
-     */
     public function persistNewAccessToken(AccessTokenEntityInterface $accessTokenEntity): void
     {
         // Some logic here to save the access token to a database
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function revokeAccessToken($tokenId): void
     {
         // Some logic here to revoke the access token
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function isAccessTokenRevoked($tokenId)
     {
         return false; // Access token hasn't been revoked
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getNewToken(ClientEntityInterface $clientEntity, array $scopes, $userIdentifier = null)
     {
         $accessToken = new AccessTokenEntity();

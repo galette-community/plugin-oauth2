@@ -32,26 +32,30 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Controllers;
 
+use DI\Attribute\Inject;
+use DI\Container;
+use Exception;
 use Galette\Controllers\AbstractPluginController;
 use GaletteOAuth2\Entities\UserEntity;
 use GaletteOAuth2\Tools\Config as Config;
 use GaletteOAuth2\Tools\Debug as Debug;
 use League\OAuth2\Server\AuthorizationServer;
-use Psr\Container\ContainerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use League\OAuth2\Server\Exception\OAuthServerException;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
 final class AuthorizationController extends AbstractPluginController
 {
     /**
-     * @Inject("Plugin Galette OAuth2")
+     * @var array<string, mixed>
      */
-    protected $module_info;
-    protected $container;
-    protected $config;
+    #[Inject("Plugin Galette OAuth2")]
+    protected array $module_info;
+    protected Container $container;
+    protected Config $config;
 
     // constructor receives container instance
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
         $this->config = $this->container->get(Config::class);
@@ -67,6 +71,8 @@ final class AuthorizationController extends AbstractPluginController
             $queryParams = $request->getQueryParams();
 
             //Save redirect_uri (it's not possible with Sessions)
+            //FIXME [JC]: I really do not like the idea of using a file on disk;
+            // this may also cause severe issues in case of concurrent logins
             if (isset($queryParams['redirect_uri'])) {
                 $key = $queryParams['client_id'] . '.redirect_uri';
                 $v = $queryParams['redirect_uri'];
@@ -91,17 +97,17 @@ final class AuthorizationController extends AbstractPluginController
             if (0) {
                 if ($request->getMethod() === 'GET') {
                     //$queryParams = $request->getQueryParams();
-                    $scopes = isset($queryParams['scope']) ? \explode(' ', $queryParams['scope']) : ['default'];
-
-                    return $this->container->get(Twig::class)->render(
+                    $scopes = isset($queryParams['scope']) ? explode(' ', $queryParams['scope']) : ['default'];
+                    $this->view->render(
                         $response,
-                        'authorize.twig',
+                        $this->getTemplate(OAUTH2_PREFIX . '_authorize'),
                         [
                             'pageTitle' => 'Authorize',
                             'clientName' => $authRequest->getClient()->getName(),
-                            'scopes' => $scopes,
-                        ],
+                            'scopes' => $scopes
+                        ]
                     );
+                    return $response;
                 }
 
                 $params = (array) $request->getParsedBody();
@@ -122,7 +128,7 @@ final class AuthorizationController extends AbstractPluginController
             return $r;
         } catch (OAuthServerException $exception) {
             return $exception->generateHttpResponse($response);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $body = $response->getBody();
             $body->write($exception->getMessage());
 
@@ -146,7 +152,7 @@ final class AuthorizationController extends AbstractPluginController
             Debug::log('authorization/Exception 1: ' . $exception->getMessage());
             // All instances of OAuthServerException can be converted to a PSR-7 response
             return $exception->generateHttpResponse($response);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             Debug::log('authorization/Exception 2: ' .
             $exception->getMessage() . '<br>' . $exception->getTraceAsString(), );
             // Catch unexpected exceptions

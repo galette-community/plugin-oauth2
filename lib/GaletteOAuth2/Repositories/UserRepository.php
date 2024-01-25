@@ -32,22 +32,20 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Repositories;
 
+use DI\Container;
+use GaletteOAuth2\Authorization\UserHelper;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\UserRepositoryInterface;
-use Psr\Container\ContainerInterface as ContainerInterface;
 
 final class UserRepository implements UserRepositoryInterface
 {
-    private $container;
+    private Container $container;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getUserEntityByUserCredentials(
         $username,
         $password,

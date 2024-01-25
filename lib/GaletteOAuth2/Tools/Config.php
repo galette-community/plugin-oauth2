@@ -34,13 +34,11 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Tools;
 
-use GaletteOAuth2\Tools\Debug as Debug;
-
 final class Config extends \Noodlehaus\Config
 {
     private $path;
 
-    public function __construct($values, ?ParserInterface $parser = null, $string = false)
+    public function __construct(array|string $values, ?ParserInterface $parser = null, bool $string = false)
     {
         $this->path = $values;
 
