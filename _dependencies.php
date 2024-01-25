@@ -55,7 +55,7 @@ $container->set(
     Config::class,
     static function (ContainerInterface $container) {
         $conf = new GaletteOAuth2\Tools\Config(OAUTH2_CONFIGPATH . '/config.yml');
-        $conf->writeFile();
+        //$conf->writeFile();
 
         return $conf;
     },

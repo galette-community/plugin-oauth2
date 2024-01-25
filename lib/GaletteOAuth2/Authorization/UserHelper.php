@@ -89,6 +89,7 @@ final class UserHelper
 
     public static function logout(Container $container): void
     {
+        /** @var Login $login */
         $login = $container->get('login');
         $history = $container->get('history');
         $session = $container->get('session');
@@ -100,8 +101,8 @@ final class UserHelper
 
     public static function getUserData(Container $container, int $id, array $options)
     {
+        /** @var Db $zdb */
         $zdb = $container->get('zdb');
-        $login = $container->get('login');
 
         $member = new Adherent($zdb);
         $member->load($id);
@@ -131,14 +132,18 @@ final class UserHelper
         //for options=
         //teamonly
         if (in_array('teamonly', $options, true)) {
-            if (!$member->isAdmin() && !$member->isStaff() && !$login->isGroupManager()) {
-                throw new UserAuthorizationException(_T("Sorry, you can't login because your are not a team member.", 'oauth2'));
+            if (!$member->isAdmin() && !$member->isStaff() && !$member->isGroupManager(null)) {
+                throw new UserAuthorizationException(
+                    _T("Sorry, you can't login because your are not a team member.", 'oauth2')
+                );
             }
         }
         //uptodate
         if (in_array('uptodate', $options, true)) {
             if (!$member->isUp2Date()) {
-                throw new UserAuthorizationException(_T("Sorry, you can't login because your are not a up-to-date members.", 'oauth2'));
+                throw new UserAuthorizationException(
+                    _T("Sorry, you can't login because your are not an up-to-date member.", 'oauth2')
+                );
             }
         }
 
@@ -153,7 +158,7 @@ final class UserHelper
             $groups[] = 'staff';
         }
 
-        if ($login->isGroupManager()) {
+        if ($member->isGroupManager(null)) {
             $groups[] = 'groupmanager';
         }
 

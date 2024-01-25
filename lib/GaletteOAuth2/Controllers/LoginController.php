@@ -73,11 +73,11 @@ final class LoginController extends AbstractPluginController
                 $url = urldecode($redirect_url);
                 $url_query = parse_url($url, PHP_URL_QUERY);
                 parse_str($url_query, $url_args);
-                $_SESSION['request_args'] = $url_args;
+                $this->session->request_args = $url_args;
             }
 
             if (OAUTH2_DEBUGSESSION) {
-                Debug::log('GET _SESSION = ' . Debug::printVar($_SESSION));
+                Debug::log('GET _SESSION = ' . Debug::printVar($this->session));
             }
 
             // display page
@@ -90,15 +90,15 @@ final class LoginController extends AbstractPluginController
         }
 
         if (OAUTH2_DEBUGSESSION) {
-            Debug::log('POST _SESSION = ' . Debug::printVar($_SESSION));
+            Debug::log('POST _SESSION = ' . Debug::printVar($this->session));
         }
 
         // Get all POST parameters
         $params = (array) $request->getParsedBody();
 
         //Try login
-        $_SESSION['isLoggedIn'] = 'no';
-        $_SESSION['user_id'] = $uid = UserHelper::login($this->container, $params['login'], $params['password']);
+        $this->session->isLoggedIn = 'no';
+        $this->session->user_id = $uid = UserHelper::login($this->container, $params['login'], $params['password']);
         //if($params['login'] == 'manuel') $loginSuccessful = true;
         Debug::log("UserHelper::login({$params['login']}) return '{$uid}'");
 
@@ -118,8 +118,8 @@ final class LoginController extends AbstractPluginController
         //check rights with scopes
         $options = UserHelper::mergeOptions(
             $this->config,
-            $_SESSION['request_args']['client_id'],
-            explode(' ', $_SESSION['request_args']['scope'])
+            $this->session->request_args['client_id'],
+            explode(' ', $this->session->request_args['scope'])
         );
 
         try {
@@ -140,18 +140,17 @@ final class LoginController extends AbstractPluginController
                 );
         }
 
-        $_SESSION['isLoggedIn'] = 'yes';
+        $this->session->isLoggedIn = 'yes';
 
         // User is logged in, redirect them to authorize
         $url_params = [
-            'response_type' => $_SESSION['request_args']['response_type'],
-            'client_id' => $_SESSION['request_args']['client_id'],
-            'scope' => $_SESSION['request_args']['scope'],
-            'state' => $_SESSION['request_args']['state'],
-            'redirect_uri' => $_SESSION['request_args']['redirect_uri'],
+            'response_type' => $this->session->request_args['response_type'],
+            'client_id' => $this->session->request_args['client_id'],
+            'scope' => $this->session->request_args['scope'],
+            'state' => $this->session->request_args['state'],
+            'redirect_uri' => $this->session->request_args['redirect_uri'],
         ];
 
-        //$url = $this->routeparser->pathFor(OAUTH2_PREFIX . '_authorize', [], $url_params);
         $url = $this->routeparser->urlFor(OAUTH2_PREFIX . '_authorize', [], $url_params);
 
         $response = new Response();
@@ -165,10 +164,10 @@ final class LoginController extends AbstractPluginController
         Debug::logRequest('logout()', $request);
         UserHelper::logout($this->container);
 
-        $_SESSION['user_id'] = null;
-        $_SESSION['isLoggedIn'] = 'no';
-        $client_id = $_SESSION['request_args']['client_id'];
-        $_SESSION['request_args'] = [];
+        $this->session->user_id = null;
+        $this->session->isLoggedIn = 'no';
+        $client_id = $this->session->request_args['client_id'];
+        $this->session->request_args = [];
 
         //By default : client_id.redirect_logout else '/'
         $redirect_logout = '/';
@@ -185,16 +184,14 @@ final class LoginController extends AbstractPluginController
 
     private function prepareVarsForm()
     {
-        $client_id = $_SESSION['request_args']['client_id'];
+        $client_id = $this->session->request_args['client_id'];
         $application = $this->config->get("{$client_id}.title", 'noname');
         $page_title = _T('Please sign in for', OAUTH2_PREFIX) . " '{$application}'";
 
         return [
             'page_title' => $page_title,
             'application' => $application,
-            'prefix' => OAUTH2_PREFIX,
-            //TODO:
-            'path_css' => $this->routeparser->pathFor('slash') . '../plugins/plugin-oauth2/webroot/',
+            'prefix' => OAUTH2_PREFIX
         ];
     }
 }

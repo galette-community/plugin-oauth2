@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Controllers;
 
+use Analog;
 use DI\Attribute\Inject;
 use DI\Container;
 use Exception;
@@ -59,6 +60,7 @@ final class AuthorizationController extends AbstractPluginController
     {
         $this->container = $container;
         $this->config = $this->container->get(Config::class);
+        parent::__construct($container);
     }
 
     public function authorize(Request $request, Response $response): Response
@@ -74,14 +76,31 @@ final class AuthorizationController extends AbstractPluginController
             //FIXME [JC]: I really do not like the idea of using a file on disk;
             // this may also cause severe issues in case of concurrent logins
             if (isset($queryParams['redirect_uri'])) {
-                $key = $queryParams['client_id'] . '.redirect_uri';
+                $client_id = $queryParams['client_id'];
+                $key = $client_id . '.redirect_uri';
+                if (!isset($this->session->$client_id)) {
+                    $this->session->$client_id = new \stdClass();
+                }
+                $this->session->$client_id->redirect_uri = $queryParams['redirect_uri'];
                 $v = $queryParams['redirect_uri'];
 
                 if ($this->config->get($key, '') === '') {
-                    Debug::log("Auto add redirect_uri to config.yml : '{$key}' = '{$v}' ");
+                    $filename = OAUTH2_PREFIX . '_' . $key . '.txt';
+                    Debug::log("Auto add redirect_uri to cache $filename: $v");
+
                     $this->config->set($key, $v);
-                    $this->config->writeFile();
-                    Debug::log('Auto add redirect_uri ok.');
+                    $stream = fopen(GALETTE_CACHE_DIR . '/' . $filename, 'w+');
+                    fwrite(
+                        $stream,
+                        $v
+                    );
+                    fclose($stream);
+
+                    /*$this->config->writeFile();*/
+                    Analog::log(
+                        'Auto add redirect_uri ok.',
+                        Analog::DEBUG
+                    );
                 }
             }
 
@@ -90,7 +109,7 @@ final class AuthorizationController extends AbstractPluginController
             $authRequest = $server->validateAuthorizationRequest($request);
 
             $user = new UserEntity();
-            $user->setIdentifier($_SESSION['user_id']);
+            $user->setIdentifier($this->session->user_id);
             $authRequest->setUser($user);
 
             //TODO : Scopes implementation
@@ -123,7 +142,10 @@ final class AuthorizationController extends AbstractPluginController
 
             // Return the HTTP redirect response
             $r = $server->completeAuthorizationRequest($authRequest, $response);
-            Debug::log('authorization/authorize() exit ok');
+            Analog::log(
+                'authorization/authorize() exit ok',
+                Analog::DEBUG
+            );
 
             return $r;
         } catch (OAuthServerException $exception) {
@@ -149,10 +171,12 @@ final class AuthorizationController extends AbstractPluginController
 
             return $r;
         } catch (OAuthServerException $exception) {
+            throw $exception;
             Debug::log('authorization/Exception 1: ' . $exception->getMessage());
             // All instances of OAuthServerException can be converted to a PSR-7 response
             return $exception->generateHttpResponse($response);
         } catch (Exception $exception) {
+            throw $exception;
             Debug::log('authorization/Exception 2: ' .
             $exception->getMessage() . '<br>' . $exception->getTraceAsString(), );
             // Catch unexpected exceptions

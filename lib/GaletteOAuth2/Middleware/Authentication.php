@@ -37,17 +37,20 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use DI\Container;
+use RKA\Session;
 use Slim\Routing\RouteParser;
 
 final class Authentication
 {
     private Container $container;
     private RouteParser $routeparser;
+    private Session $session;
 
     public function __construct(Container $container)
     {
         $this->container = $container;
         $this->routeparser = $container->get(RouteParser::class);
+        $this->session = $container->get('session');
     }
 
     /**
@@ -60,7 +63,7 @@ final class Authentication
      */
     public function __invoke(Request $request, RequestHandler $handler): Response
     {
-        $loggedIn = $_SESSION['isLoggedIn'] ?? '';
+        $loggedIn = $this->session->isLoggedIn ?? '';
 
         if ('yes' !== $loggedIn) {
             $url = $this->routeparser->urlFor(

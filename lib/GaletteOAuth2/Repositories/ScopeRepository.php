@@ -48,6 +48,9 @@ final class ScopeRepository implements ScopeRepositoryInterface
             'email' => [
                 'description' => 'Your email address',
             ],
+            'teamonly' => [
+                'description' => 'Access to your team',
+            ]
         ];
 
         if (array_key_exists($scopeIdentifier, $scopes) === false) {

@@ -30,8 +30,8 @@ declare(strict_types=1);
  *  @license   http://www.gnu.org/licenses/gpl-3.0.html GPL License 3.0
  */
 
-\define('OAUTH2_LOG', false);
-\define('OAUTH2_DEBUGSESSION', false);
-\define('OAUTH2_CONFIGPATH', __DIR__ . '/config'); //For more security, you can move this folder
+define('OAUTH2_LOG', true);
+define('OAUTH2_DEBUGSESSION', false);
+define('OAUTH2_CONFIGPATH', __DIR__ . '/config'); //For more security, you can move this folder
 
-\define('OAUTH2_PREFIX', 'oauth2');
+define('OAUTH2_PREFIX', 'oauth2');

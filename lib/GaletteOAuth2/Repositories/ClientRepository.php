@@ -37,24 +37,39 @@ use GaletteOAuth2\Entities\ClientEntity;
 use GaletteOAuth2\Tools\Config;
 use GaletteOAuth2\Tools\Debug;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
+use RKA\Session;
 
 final class ClientRepository implements ClientRepositoryInterface
 {
     private Container $container;
     private Config $config;
+    private Session $session;
 
     public function __construct(Container $container)
     {
         $this->container = $container;
         $this->config = $this->container->get(Config::class);
+        $this->session = $this->container->get('session');
     }
 
-    public function getClientEntity($clientIdentifier)
+    public function getClientEntity($client_id)
     {
         $client = new ClientEntity();
-        $client->setIdentifier($this->config->get("{$clientIdentifier}.id", $clientIdentifier));
-        $client->setName($clientIdentifier);
-        $client->setRedirectUri($this->config->get("{$clientIdentifier}.redirect_uri"));
+        $client->setIdentifier($this->config->get("{$client_id}.id", $client_id));
+        $client->setName($client_id);
+        if (isset($this->session->$client_id)) {
+            $redirect_uri = $this->session->$client_id->redirect_uri;
+        } else {
+            $filename = OAUTH2_PREFIX . '_' . $client_id . '.redirect_uri.txt';
+            $redirect_uri = file_get_contents(GALETTE_CACHE_DIR . '/' . $filename);
+        }
+        $cid = $this->config->get("{$client_id}.redirect_uri");
+        /*$redirect_uri = $this->config->get("{$clientIdentifier}.redirect_uri");
+        if (empty($redirect_uri)) {
+            $filename = OAUTH2_PREFIX . '_' . $clientIdentifier . '.redirect_uri.txt';
+            $redirect_uri = file_get_contents(GALETTE_CACHE_DIR . '/' . $filename);
+        }*/
+        $client->setRedirectUri($redirect_uri);
         $client->setConfidential();
 
         Debug::log('getClientEntity() ' . Debug::printVar($client));

@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Controllers;
 
+use Analog;
 use DI\Attribute\Inject;
 use DI\Container;
 use Galette\Controllers\AbstractPluginController;
@@ -40,6 +41,7 @@ use GaletteOAuth2\Authorization\UserHelper;
 use GaletteOAuth2\Tools\Config;
 use GaletteOAuth2\Tools\Debug;
 use League\OAuth2\Server\ResourceServer;
+use RKA\Session;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -58,6 +60,7 @@ final class ApiController extends AbstractPluginController
     {
         $this->container = $container;
         $this->config = $container->get(Config::class);
+        parent::__construct($container);
     }
 
     public function user(Request $request, Response $response): Response
@@ -70,16 +73,27 @@ final class ApiController extends AbstractPluginController
         $oauth_user_id = (int) $rep->getAttribute('oauth_user_id'); //SESSION is empty, use decrypted data
         $options = UserHelper::mergeOptions($this->config, $rep->getAttribute('oauth_client_id'), $rep->getAttribute('oauth_scopes'));
 
-        Debug::log("api/user() load {$oauth_user_id} - " . Debug::printVar($options));
+        Debug::log("api/user() load user #{$oauth_user_id} - " . Debug::printVar($options));
 
         try {
             $data = UserHelper::getUserData($this->container, $oauth_user_id, $options);
         } catch (UserAuthorizationException $e) {
-            $r2 = new Response();
-            $r2->getBody()->write($e->getMessage());
-            Debug::log('api/user() error : ' . $e->getMessage());
-
-            return $r2->withStatus(200);
+            throw $e;
+            //UserHelper::logout($this->container);
+            /*Analog::log(
+                'api/user() error : ' . $e->getMessage(),
+                Analog::ERROR
+            );
+            $this->flash->addMessage(
+                'error_detected',
+                _T('Check your login / email or password.', 'oauth2')
+            );
+            return $response
+                ->withStatus(301)
+                ->withHeader(
+                    'Location',
+                    $this->routeparser->urlFor(OAUTH2_PREFIX . '_login')
+                );*/
         }
 
         Debug::log('api/user() return data = ' . Debug::printVar($data));
