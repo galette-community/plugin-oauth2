@@ -145,7 +145,7 @@ final class LoginController extends AbstractPluginController
             'redirect_uri' => $_SESSION['request_args']['redirect_uri'],
         ];
 
-        $url = $this->router->pathFor(OAUTH2_PREFIX . '_authorize', [], $url_params);
+        $url = $this->routeparser->pathFor(OAUTH2_PREFIX . '_authorize', [], $url_params);
 
         $response = new Response();
 
@@ -187,7 +187,7 @@ final class LoginController extends AbstractPluginController
             'application' => $application,
             'prefix' => OAUTH2_PREFIX,
             //TODO:
-            'path_css' => $this->router->pathFor('slash') . '../plugins/plugin-oauth2/webroot/',
+            'path_css' => $this->routeparser->pathFor('slash') . '../plugins/plugin-oauth2/webroot/',
         ];
     }
 }

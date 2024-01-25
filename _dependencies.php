@@ -49,7 +49,7 @@ if (OAUTH2_LOG) {
     Debug::init();
 }
 
-$container = $this->getContainer();
+$container = $app->getContainer();
 
 $container->set(
     Config::class,
