@@ -1,7 +1,5 @@
-<?php
-
 /**
- * Copyright © 2021-2024 The Galette Team
+ * Copyright © 2021-%year% The Galette Team
  *
  * This file is part of Galette OAuth2 plugin (https://galette-community.github.io/plugin-oauth2/).
  *
@@ -18,21 +16,3 @@
  * You should have received a copy of the GNU General Public License
  * along with Galette OAuth2 plugin. If not, see <http://www.gnu.org/licenses/>.
  */
-
-declare(strict_types=1);
-
-namespace GaletteOAuth2\Entities;
-
-use League\OAuth2\Server\Entities\Traits\EntityTrait;
-use League\OAuth2\Server\Entities\UserEntityInterface;
-
-/**
- * Class UserEntity
- *
- * @author Manuel Hervouet <manuelh78dev@ik.me>
- * @author Johan Cwiklinski <johan@x-tnd.be>
- */
-final class UserEntity implements UserEntityInterface
-{
-    use EntityTrait;
-}

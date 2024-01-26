@@ -1,0 +1,68 @@
+name: Linux
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - 'feature/*'
+      - 'hotfix/*'
+      - 'release/*'
+  pull_request:
+
+jobs:
+  ubuntu-latest:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        php-versions: [ '8.1', '8.3' ]
+        coverage: [none]
+      fail-fast: false
+
+    name: PHP ${{ matrix.php-versions }} on ubuntu-latest
+
+    steps:
+      - name: PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: composer
+          coverage: ${{ matrix.coverage }}
+
+      - name: Checkout Galette core
+        uses: actions/checkout@v3
+        with:
+          repository: galette/galette
+          path: galette-core
+          fetch-depth: 1
+          ref: develop
+
+      - name: Checkout plugin
+        uses: actions/checkout@v3
+        with:
+          path: galette-core/galette/plugins/plugin-oauth2
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: |
+          cd galette-core/galette
+          composer install --ignore-platform-reqs
+          cd plugins/plugin-oauth2
+          composer install --ignore-platform-reqs
+
+      - name: Headers checks
+        run: |
+          cd galette-core/galette/plugins/plugin-oauth2
+          ../../vendor/bin/docheader check lib ./*.php
