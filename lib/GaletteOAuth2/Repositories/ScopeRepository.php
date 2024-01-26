@@ -52,7 +52,7 @@ final class ScopeRepository implements ScopeRepositoryInterface
         ];
 
         if (array_key_exists($scopeIdentifier, $scopes) === false) {
-            return;
+            return null;
         }
 
         $scope = new ScopeEntity();

@@ -71,6 +71,7 @@ final class LoginController extends AbstractPluginController
                 $this->session->request_args = $url_args;
             }
 
+            /** @phpstan-ignore-next-line */
             if (OAUTH2_DEBUGSESSION) {
                 Debug::log('GET _SESSION = ' . Debug::printVar($this->session));
             }
@@ -84,6 +85,7 @@ final class LoginController extends AbstractPluginController
             return $response;
         }
 
+        /** @phpstan-ignore-next-line */
         if (OAUTH2_DEBUGSESSION) {
             Debug::log('POST _SESSION = ' . Debug::printVar($this->session));
         }

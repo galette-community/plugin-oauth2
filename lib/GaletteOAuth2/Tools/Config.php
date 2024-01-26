@@ -31,14 +31,15 @@ namespace GaletteOAuth2\Tools;
  */
 final class Config extends \Noodlehaus\Config
 {
-    private $path;
+    /** @var string[]|string */
+    private array|string $path;
 
-    public function __construct(array|string $values, ?ParserInterface $parser = null, bool $string = false)
+    public function __construct(array|string $values)
     {
         $this->path = $values;
 
         try {
-            parent::__construct($values, new \Noodlehaus\Parser\Yaml(), false);
+            parent::__construct($values, new \Noodlehaus\Parser\Yaml());
         } catch (\Exception $e) {
             Debug::log("Error load file {$this->path}");
         }

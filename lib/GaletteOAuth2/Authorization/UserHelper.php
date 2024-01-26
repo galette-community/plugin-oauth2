@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace GaletteOAuth2\Authorization;
 
 use DI\Container;
+use Galette\Core\Db;
 use Galette\Core\Login;
 use Galette\Entity\Adherent;
 use GaletteOAuth2\Tools\Config;

@@ -39,13 +39,11 @@ use Slim\Routing\RouteParser;
  */
 final class Authentication
 {
-    private Container $container;
     private RouteParser $routeparser;
     private Session $session;
 
     public function __construct(Container $container)
     {
-        $this->container = $container;
         $this->routeparser = $container->get(RouteParser::class);
         $this->session = $container->get('session');
     }

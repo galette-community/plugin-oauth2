@@ -23,7 +23,7 @@ declare(strict_types=1);
 
 namespace GaletteOAuth2\Controllers;
 
-use Analog;
+use Analog\Analog;
 use DI\Attribute\Inject;
 use DI\Container;
 use Exception;
@@ -33,6 +33,7 @@ use GaletteOAuth2\Tools\Config as Config;
 use GaletteOAuth2\Tools\Debug as Debug;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 
@@ -60,7 +61,7 @@ final class AuthorizationController extends AbstractPluginController
         parent::__construct($container);
     }
 
-    public function authorize(Request $request, Response $response): Response
+    public function authorize(Request $request, Response $response): Response|ResponseInterface
     {
         Debug::logRequest('authorization/authorize()', $request);
 
@@ -110,7 +111,7 @@ final class AuthorizationController extends AbstractPluginController
             $authRequest->setUser($user);
 
             //TODO : Scopes implementation
-            if (0) {
+            /*if (0) {
                 if ($request->getMethod() === 'GET') {
                     //$queryParams = $request->getQueryParams();
                     $scopes = isset($queryParams['scope']) ? explode(' ', $queryParams['scope']) : ['default'];
@@ -130,7 +131,10 @@ final class AuthorizationController extends AbstractPluginController
             } else {
                 $params = [];
                 $params['authorized'] = 'true';
-            }
+            }*/
+            $params = [];
+            $params['authorized'] = 'true';
+
 
             // Once the user has approved or denied the client update the status
             // (true = approved, false = denied)
@@ -155,7 +159,7 @@ final class AuthorizationController extends AbstractPluginController
         }
     }
 
-    public function token(Request $request, Response $response): Response
+    public function token(Request $request, Response $response): Response|ResponseInterface
     {
         Debug::logRequest('authorization/token()', $request);
         $server = $this->container->get(AuthorizationServer::class);
@@ -168,12 +172,10 @@ final class AuthorizationController extends AbstractPluginController
 
             return $r;
         } catch (OAuthServerException $exception) {
-            throw $exception;
             Debug::log('authorization/OAuthServerException: ' . $exception->getMessage());
             // All instances of OAuthServerException can be converted to a PSR-7 response
             return $exception->generateHttpResponse($response);
         } catch (Exception $exception) {
-            throw $exception;
             Debug::log(
                 'authorization/Exception: ' .
                 $exception->getMessage() . '<br>' . $exception->getTraceAsString()
