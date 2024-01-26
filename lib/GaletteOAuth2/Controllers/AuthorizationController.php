@@ -169,13 +169,15 @@ final class AuthorizationController extends AbstractPluginController
             return $r;
         } catch (OAuthServerException $exception) {
             throw $exception;
-            Debug::log('authorization/Exception 1: ' . $exception->getMessage());
+            Debug::log('authorization/OAuthServerException: ' . $exception->getMessage());
             // All instances of OAuthServerException can be converted to a PSR-7 response
             return $exception->generateHttpResponse($response);
         } catch (Exception $exception) {
             throw $exception;
-            Debug::log('authorization/Exception 2: ' .
-            $exception->getMessage() . '<br>' . $exception->getTraceAsString(), );
+            Debug::log(
+                'authorization/Exception: ' .
+                $exception->getMessage() . '<br>' . $exception->getTraceAsString()
+            );
             // Catch unexpected exceptions
             $body = $response->getBody();
             $body->write($exception->getMessage());
