@@ -42,11 +42,31 @@ require_once $module['root'] . '/_config.inc.php';
 require_once '_dependencies.php';
 
 //login is always called by a http_redirect
-$app->map(['GET', 'POST'], '/login', [LoginController::class, 'login'])->setName(OAUTH2_PREFIX . '_login');
-$app->map(['GET', 'POST'], '/logout', [LoginController::class, 'logout'])->setName(OAUTH2_PREFIX . '_logout');
+$app->map(
+    ['GET', 'POST'],
+    '/login',
+    [LoginController::class, 'login']
+)->setName(OAUTH2_PREFIX . '_login');
 
-$app->map(['GET', 'POST'], '/authorize', [AuthorizationController::class, 'authorize'])
-    ->setName(OAUTH2_PREFIX . '_authorize')->add(Authentication::class);
-$app->post('/access_token', [AuthorizationController::class, 'token'])->setName(OAUTH2_PREFIX . '_token');
+$app->map(
+    ['GET', 'POST'],
+    '/logout',
+    [LoginController::class, 'logout']
+)->setName(OAUTH2_PREFIX . '_logout');
 
-$app->get('/user', [ApiController::class, 'user'])->setName(OAUTH2_PREFIX . '_user');
+$app->map(
+    ['GET', 'POST'],
+    '/authorize',
+    [AuthorizationController::class, 'authorize'])
+->setName(OAUTH2_PREFIX . '_authorize')
+->add(Authentication::class);
+
+$app->post(
+    '/access_token',
+    [AuthorizationController::class, 'token']
+)->setName(OAUTH2_PREFIX . '_token');
+
+$app->get(
+    '/user',
+    [ApiController::class, 'user']
+)->setName(OAUTH2_PREFIX . '_user');
