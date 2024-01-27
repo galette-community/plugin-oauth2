@@ -18,7 +18,8 @@
         "php": ">=8.1",
         "league/oauth2-server": "^8.4",
         "hassankhan/config": "^3.1",
-        "defuse/php-encryption": "^2.4"
+        "defuse/php-encryption": "^2.4",
+        "psr/http-message": "1.1"
     },
     "config": {
         "optimize-autoloader": true
