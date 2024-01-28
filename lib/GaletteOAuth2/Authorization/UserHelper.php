@@ -185,6 +185,17 @@ final class UserHelper
         }
         $groups = implode(',', $groups);
 
+        $phone = '';
+        if ($member->phone) {
+            $phone = $member->phone;
+        }
+        if ($member->gsm) {
+            if ($phone) {
+                $phone .= '/';
+            }
+            $phone .= $member->gsm;
+        }
+
         return [
             'id' => $member->id,
             'identifier' => $member->id, //nextcloud
@@ -199,7 +210,7 @@ final class UserHelper
             'country' => $member->country,
             'zip' => $member->zipcode,
             'city' => $member->town,
-            'phone' => $member->phone . '/' . $member->gsm,
+            'phone' => $phone,
 
             'status' => $member->status,
             'state' => $etat_adhesion ? 'true' : 'false',
@@ -234,7 +245,7 @@ final class UserHelper
     // 'email' => 'uuuu@ik.me', 'emailVerified' => NULL, 'phone' => NULL,
     // 'address' => NULL, 'country' => NULL, 'region' => NULL, 'city' => NULL, 'zip' => NULL
 
-    private static function stripAccents(string $str): string
+    public static function stripAccents(string $str): string
     {
         //FIXME: there is probably a better way to go.
         //try with something like transliterator_transliterate("Any-Latin; Latin-ASCII; [^a-zA-Z0-9\.\ -_] Remove;", $str);
