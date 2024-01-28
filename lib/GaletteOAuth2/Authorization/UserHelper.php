@@ -127,6 +127,10 @@ final class UserHelper
 
         $etat_adhesion = ($member->isActive() && $member->isUp2Date()) || $member->isAdmin();
 
+        if (!$member->isActive()) {
+            throw new UserAuthorizationException(_T('You are not an active member.', 'oauth2'));
+        }
+
         //for options=
         //teamonly
         if (in_array('teamonly', $options, true)) {
@@ -162,10 +166,6 @@ final class UserHelper
 
         if ($member->isUp2Date()) {
             $groups[] = 'uptodate';
-        }
-
-        if (!$member->isActive()) {
-            throw new UserAuthorizationException(_T('You are not an active member.', 'oauth2'));
         }
 
         //Add externals groups (free text in info_adh)
