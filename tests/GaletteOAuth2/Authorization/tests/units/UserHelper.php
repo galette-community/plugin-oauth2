@@ -42,8 +42,8 @@ class UserHelper extends GaletteTestCase
         /** @var \Galette\Core\Plugins */
         global $plugins;
 
-        $str = "éè";
-        $this->assertSame('ee', \GaletteOAuth2\Authorization\UserHelper::stripAccents($str));
+        $str = "çéè-ßØ";
+        $this->assertSame('cee-sso', \GaletteOAuth2\Authorization\UserHelper::stripAccents($str));
     }
 
     /**

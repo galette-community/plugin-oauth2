@@ -121,9 +121,9 @@ final class UserHelper
         //Normalized format s.name (example mail usage : s.name@xxxx.xx )
         //FIXME: why don't use email directly?
         $norm_login =
-        mb_substr(self::stripAccents(mb_strtolower($member->surname)), 0, 1) .
+        mb_substr(self::stripAccents($member->surname), 0, 1) .
         '.' .
-        self::stripAccents(mb_strtolower($nameFPart));
+        self::stripAccents($nameFPart);
 
         $etat_adhesion = ($member->isActive() && $member->isUp2Date()) || $member->isAdmin();
 
@@ -181,7 +181,7 @@ final class UserHelper
             $group = trim($group);
             $group = str_replace([' ', '/', '(', ')'], ['_', '', '', ''], $group);
             $group = str_replace('__', '_', $group);
-            $group = mb_strtolower(self::stripAccents($group));
+            $group = self::stripAccents($group);
         }
         $groups = implode(',', $groups);
 
@@ -245,15 +245,19 @@ final class UserHelper
     // 'email' => 'uuuu@ik.me', 'emailVerified' => NULL, 'phone' => NULL,
     // 'address' => NULL, 'country' => NULL, 'region' => NULL, 'city' => NULL, 'zip' => NULL
 
+    /**
+     * Strips accented characters, lower string
+     *
+     * @param string $str
+     * @return string
+     */
     public static function stripAccents(string $str): string
     {
-        //FIXME: there is probably a better way to go.
-        //try with something like transliterator_transliterate("Any-Latin; Latin-ASCII; [^a-zA-Z0-9\.\ -_] Remove;", $str);
-        //see https://www.matthecat.com/supprimer-les-accents-d-une-chaine-avec-php.html and https://stackoverflow.com/a/35177682
-        return strtr(
-            $str,
-            'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖØÙÚÛÜÝßàáâãäåæçèéêëìíîïñòóôõöøùúûüýÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĹĺĻļĽľĿŀŁłŃńŅņŇňŉŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſƒƠơƯưǍǎǏǐǑǒǓǔǕǖǗǘǙǚǛǜǺǻǼǽǾǿ',
-            'AAAAAAAECEEEEIIIIDNOOOOOOUUUUYsaaaaaaaeceeeeiiiinoooooouuuuyyAaAaAaCcCcCcCcDdDdEeEeEeEeEeGgGgGgGgHhHhIiIiIiIiIiIJijJjKkLlLlLlLlllNnNnNnnOoOoOoOEoeRrRrRrSsSsSsSsTtTtTtUuUuUuUuUuUuWwYyYZzZzZzsfOoUuAaIiOoUuUuUuUuUuAaAEaeOo'
+        return mb_strtolower(
+            transliterator_transliterate(
+                "Any-Latin; Latin-ASCII; [^a-zA-Z0-9\.\ -_] Remove;",
+                $str
+            )
         );
     }
 }
