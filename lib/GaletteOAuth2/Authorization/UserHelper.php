@@ -125,6 +125,7 @@ final class UserHelper
         '.' .
         self::stripAccents($nameFPart);
 
+        //FIXME: is that really useful? From a Galette PoV; this does not means much.
         $etat_adhesion = ($member->isActive() && $member->isUp2Date()) || $member->isAdmin();
 
         if (!$member->isActive()) {
@@ -168,6 +169,8 @@ final class UserHelper
             $groups[] = 'uptodate';
         }
 
+        //FIXME: add groups from groups table? Or another way? info_adh does not seems a good way for everyone
+        //FIXME: For example, data is replaced on duplication, thus oauth groups configuration would be lost
         //Add externals groups (free text in info_adh)
         //Example #GROUPS:compta;accueil#
         if (preg_match('/#GROUPS:([^#]*([^#]*))#/mui', $member->others_infos_admin, $matches, PREG_OFFSET_CAPTURE)) {
