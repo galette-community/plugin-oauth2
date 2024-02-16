@@ -19,20 +19,13 @@
  * along with Galette OAuth2 plugin. If not, see <http://www.gnu.org/licenses/>.
  */
 
-declare(strict_types=1);
-
-namespace GaletteOAuth2\Entities;
-
-use League\OAuth2\Server\Entities\Traits\EntityTrait;
-use League\OAuth2\Server\Entities\UserEntityInterface;
-
 /**
- * Class UserEntity
+ * Bootstrap tests file for OAuth2 plugin
  *
- * @author Manuel Hervouet <manuelh78dev@ik.me>
  * @author Johan Cwiklinski <johan@x-tnd.be>
  */
-final class UserEntity implements UserEntityInterface
-{
-    use EntityTrait;
-}
+
+define('GALETTE_PLUGINS_PATH', __DIR__ . '/../../');
+$basepath = '../../../galette/';
+
+include_once '../../../tests/TestsBootstrap.php';

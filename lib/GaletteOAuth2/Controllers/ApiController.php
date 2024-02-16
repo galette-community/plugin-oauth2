@@ -1,61 +1,61 @@
 <?php
 
-declare(strict_types=1);
-
 /**
- * Plugin OAuth2 for Galette Project
+ * Copyright © 2021-2024 The Galette Team
  *
- *  PHP version 7
+ * This file is part of Galette OAuth2 plugin (https://galette-community.github.io/plugin-oauth2/).
  *
- *  This file is part of 'Plugin OAuth2 for Galette Project'.
+ * Galette is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Plugin OAuth2 for Galette Project is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Plugin OAuth2 for Galette Project is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Galette is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with Plugin OAuth2 for Galette Project. If not, see <http://www.gnu.org/licenses/>.
- *
- *  @category Plugins
- *  @package  Plugin OAuth2 for Galette Project
- *
- *  @author    Manuel Hervouet <manuelh78dev@ik.me>
- *  @copyright Manuel Hervouet (c) 2021
- *  @license   http://www.gnu.org/licenses/gpl-3.0.html GPL License 3.0
+ * You should have received a copy of the GNU General Public License
+ * along with Galette OAuth2 plugin. If not, see <http://www.gnu.org/licenses/>.
  */
+
+declare(strict_types=1);
 
 namespace GaletteOAuth2\Controllers;
 
+use DI\Attribute\Inject;
+use DI\Container;
 use Galette\Controllers\AbstractPluginController;
 use GaletteOAuth2\Authorization\UserAuthorizationException;
 use GaletteOAuth2\Authorization\UserHelper;
 use GaletteOAuth2\Tools\Config;
 use GaletteOAuth2\Tools\Debug;
 use League\OAuth2\Server\ResourceServer;
-use Psr\Container\ContainerInterface;
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Slim\Psr7\Request;
+use Slim\Psr7\Response;
 
+/**
+ * Controller for API
+ *
+ * @author Manuel Hervouet <manuelh78dev@ik.me>
+ * @author Johan Cwiklinski <johan@x-tnd.be>
+ */
 final class ApiController extends AbstractPluginController
 {
     /**
-     * @Inject("Plugin Galette OAuth2")
+     * @var array<string, mixed>
      */
-    protected $module_info;
-    protected $container;
-    protected $config;
+    #[Inject("Plugin Galette OAuth2")]
+    protected array $module_info;
+    protected Container $container;
+    protected Config $config;
 
     // constructor receives container instance
-    public function __construct(ContainerInterface $container)
+    public function __construct(Container $container)
     {
         $this->container = $container;
         $this->config = $container->get(Config::class);
+        parent::__construct($container);
     }
 
     public function user(Request $request, Response $response): Response
@@ -68,21 +68,32 @@ final class ApiController extends AbstractPluginController
         $oauth_user_id = (int) $rep->getAttribute('oauth_user_id'); //SESSION is empty, use decrypted data
         $options = UserHelper::mergeOptions($this->config, $rep->getAttribute('oauth_client_id'), $rep->getAttribute('oauth_scopes'));
 
-        Debug::log("api/user() load {$oauth_user_id} - " . Debug::printVar($options));
+        Debug::log("api/user() load user #{$oauth_user_id} - " . Debug::printVar($options));
 
         try {
             $data = UserHelper::getUserData($this->container, $oauth_user_id, $options);
         } catch (UserAuthorizationException $e) {
-            $r2 = new Response();
-            $r2->getBody()->write($e->getMessage());
-            Debug::log('api/user() error : ' . $e->getMessage());
-
-            return $r2->withStatus(200);
+            throw $e;
+            //UserHelper::logout($this->container);
+            /*Analog::log(
+                'api/user() error : ' . $e->getMessage(),
+                Analog::ERROR
+            );
+            $this->flash->addMessage(
+                'error_detected',
+                _T('Check your login / email or password.', 'oauth2')
+            );
+            return $response
+                ->withStatus(301)
+                ->withHeader(
+                    'Location',
+                    $this->routeparser->urlFor(OAUTH2_PREFIX . '_login')
+                );*/
         }
 
         Debug::log('api/user() return data = ' . Debug::printVar($data));
 
-        $response->getBody()->write(\json_encode($data));
+        $response->getBody()->write(json_encode($data));
         Debug::log('api/user() exit.');
 
         return $response->withStatus(200);

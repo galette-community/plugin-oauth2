@@ -1,69 +1,69 @@
 <?php
 
-declare(strict_types=1);
-
 /**
- * Plugin OAuth2 for Galette Project
+ * Copyright © 2021-2024 The Galette Team
  *
- *  PHP version 7
+ * This file is part of Galette OAuth2 plugin (https://galette-community.github.io/plugin-oauth2/).
  *
- *  This file is part of 'Plugin OAuth2 for Galette Project'.
+ * Galette is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- *  Plugin OAuth2 for Galette Project is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Plugin OAuth2 for Galette Project is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * Galette is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with Plugin OAuth2 for Galette Project. If not, see <http://www.gnu.org/licenses/>.
- *
- *  @category Plugins
- *  @package  Plugin OAuth2 for Galette Project
- *
- *  @author    Manuel Hervouet <manuelh78dev@ik.me>
- *  @copyright Manuel Hervouet (c) 2021
- *  @license   http://www.gnu.org/licenses/gpl-3.0.html GPL License 3.0
+ * You should have received a copy of the GNU General Public License
+ * along with Galette OAuth2 plugin. If not, see <http://www.gnu.org/licenses/>.
  */
+
+declare(strict_types=1);
 
 namespace GaletteOAuth2\Tools;
 
+use Analog\Analog;
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
+/**
+ * Debug tools
+ *
+ * @author Manuel Hervouet <manuelh78dev@ik.me>
+ * @author Johan Cwiklinski <johan@x-tnd.be>
+ */
 final class Debug
 {
     private static $logger;
 
-    public static function init()
+    public static function init(): Logger
     {
-        self::$logger = new \Monolog\Logger('OAuth2');
-        $stream = new \Monolog\Handler\StreamHandler(__DIR__ . '/../../../logs/app.log', Logger::DEBUG);
+        self::$logger = new Logger('OAuth2');
+        $stream = new StreamHandler(GALETTE_LOGS_PATH . '/oauth.log', Logger::DEBUG);
         $dateFormat = 'Y-m-d H:i:s';
         //$output = "[%datetime%] %channel% %level_name%: %message% \n"; // %context% %extra%\n";
         $output = "[%datetime%] : %message% \n"; // %context% %extra%\n";
-        $formatter = new \Monolog\Formatter\LineFormatter($output, $dateFormat);
+        $formatter = new LineFormatter($output, $dateFormat);
         $stream->setFormatter($formatter);
         self::$logger->pushHandler($stream);
 
         return self::$logger;
     }
 
-    public static function printVar($expression, $return = true)
+    public static function printVar($expression, bool $return = true)
     {
-        $export = \print_r($expression, true);
+        $export = print_r($expression, true);
         $patterns = [
             '/array \\(/' => '[',
             '/^([ ]*)\\)(,?)$/m' => '$1]$2',
             "/=>[ ]?\n[ ]+\\[/" => '=> [',
             "/([ ]*)(\\'[^\\']+\\') => ([\\[\\'])/" => '$1$2 => $3',
         ];
-        $export = \preg_replace(\array_keys($patterns), \array_values($patterns), $export);
+        $export = preg_replace(array_keys($patterns), array_values($patterns), $export);
 
-        if ((bool) $return) {
+        if ($return) {
             return $export;
         }
         echo $export;
@@ -71,16 +71,33 @@ final class Debug
 
     public static function log(string $txt): void
     {
-        if (null !== self::$logger) {
-            self::$logger->info($txt);
-        }
+        Analog::log(
+            $txt,
+            Analog::DEBUG
+        );
     }
 
     public static function logRequest($fct, $request): void
     {
-        self::log("{$fct} :");
+        $msg = sprintf(
+            "%s - URI: %s",
+            $fct,
+            $request->getUri()
+        );
+        if (count($qp = $request->getQueryParams()) > 0) {
+            $msg .= "\nGET dump: " . self::printVar($qp);
+        }
+        if (count($post = (array)$request->getParsedBody()) > 0) {
+            $msg .= "\nPOST dump: " . self::printVar($post);
+        }
+        $msg .= "\n";
+        Analog::log(
+            $msg,
+            Analog::DEBUG
+        );
+        /*self::log("{$fct} :");
         self::log('URI : ' . $request->getUri());
         self::log('GET dump :' . self::printVar($request->getQueryParams()));
-        self::log('POST dump :' . self::printVar((array) $request->getParsedBody()));
+        self::log('POST dump :' . self::printVar((array) $request->getParsedBody()));*/
     }
 }
