@@ -15,6 +15,12 @@
     "static", "self", "parent",
     "array", "bool", "callable", "float", "int", "iterable", "object", "string", "void",
 
+    "// random native PHP functions",
+    "// these are moved in random native extension in PHP 8.2, but this extension does not exists in previous PHP versions",
+    "mt_rand",
+    "rand",
+    "random_int",
+
     "// Galette constants (not detected as they are dynamically declared)",
     "GALETTE_ATTACHMENTS_PATH",
     "GALETTE_BASE_PATH",
@@ -27,11 +33,13 @@
     "GALETTE_CONFIG_PATH",
     "GALETTE_DATA_PATH",
     "GALETTE_DB_VERSION",
+    "GALETTE_DOWNLOADS_URI",
     "GALETTE_EXPORTS_PATH",
     "GALETTE_FILES_PATH",
     "GALETTE_IMPORTS_PATH",
     "GALETTE_LOGS_PATH",
     "GALETTE_MODE",
+    "GALETTE_DEBUG",
     "GALETTE_NIGHTLY",
     "GALETTE_PHOTOS_PATH",
     "GALETTE_PLUGINS_PATH",
@@ -49,11 +57,6 @@
     "GALETTE_PGSQL_MIN",
     "GALETTE_DISPLAY_VERSION",
     "GALETTE_PHP_MIN",
-    "_T",
-    "__",
-    "_Tn",
-    "_Tx",
-    "_Tnx",
 
     "// Galette db constants (not detected as they are dynamically declared)",
     "HOST_DB",
@@ -74,6 +77,11 @@
     "isValidWebUrl",
     "remove_remarks",
     "split_sql_file",
+    "_T",
+    "__",
+    "_Tn",
+    "_Tx",
+    "_Tnx",
 
     "// XHProf PECL extension",
     "XHProfRuns_Default",
@@ -92,12 +100,7 @@
     "DI\\Container",
     "DI\\ContainerBuilder",
     "DI\\Bridge\\Slim\\App",
-
-    "// Should not error (not used) but...",
-    "mt_rand",
-    "rand",
-    "random_int",
-
+    "DI\\Attribute\\Inject",
 
     "// Not detected, do not know why.",
     "Psr\\Http\\Server\\RequestHandlerInterface"
