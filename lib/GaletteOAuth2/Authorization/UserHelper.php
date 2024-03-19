@@ -128,8 +128,14 @@ final class UserHelper
         //FIXME: is that really useful? From a Galette PoV; this does not means much.
         $etat_adhesion = ($member->isActive() && $member->isUp2Date()) || $member->isAdmin();
 
+        //check active member ?
         if (!$member->isActive()) {
             throw new UserAuthorizationException(_T('You are not an active member.', 'oauth2'));
+        }
+
+        //check email 
+        if(!filter_var($member->email, FILTER_VALIDATE_EMAIL)) {
+            throw new UserAuthorizationException(_T("Sorry, you can't login. Please, add an email address to your account.", 'oauth2'));
         }
 
         //for options=
