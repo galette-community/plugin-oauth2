@@ -3,7 +3,7 @@ title: Documentation
 description: Galette oAuth2 server
 ---
 
-## Setup
+## Configuration
 
 This project use `league/oauth2-server`, `symfony/yaml` and `hassankhan/config`
 packages.
@@ -56,7 +56,7 @@ The corresponding NextCloud configuration:
 
 ![Nextcloud configuration example](examples/nextcloud.png)
 
-#### Available options :
+#### Options disponibles :
 * teamonly : only staff members can login
 * uptodate : only uptodate members can login
 
