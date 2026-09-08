@@ -1,6 +1,6 @@
 ---
 title: Documentation
-description: Galette oAuth2 server
+description: Galette oAuth2 serveur
 ---
 
 ## Configuration
