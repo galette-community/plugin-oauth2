@@ -13,7 +13,7 @@ composer install
 
 ## Configuration
 
-### Prepare public/private keys
+### Préparer les clés publiques/privées
 
 ```
 cd plugin-oauth2/config
@@ -47,7 +47,7 @@ galette_xxxxx:
 
 The corresponding Flarum configuration:
 
-![Flarum configuration example](examples/flarum.png)
+![Exemple de configuration Flarum](examples/flarum.png)
 
 The corresponding NextCloud configuration:
 
