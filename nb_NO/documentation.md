@@ -5,10 +5,7 @@ description: Galette oAuth2 server
 
 ## Setup
 
-This project use `league/oauth2-server`, `symfony/yaml` and `hassankhan/config`
-packages.
-
-To automatically download these packages:
+To automatically download dependencies packages:
 ```
 cd plugin-oauth2
 composer install
