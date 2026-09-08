@@ -1,6 +1,6 @@
 ---
 title: Galette oAuth2
-description: Galette oAuth2 server
+description: Galette serveur oAuth2
 ---
 
 Makes Galette act as a oAuth2 server; so it is possible to use existing members
